@@ -47,3 +47,8 @@ run: all
 
 # Phony targets (not actual files)
 .PHONY: all clean run directories
+
+# Convenience Targets:
+# make all: Builds the project (default).
+# make clean: Removes all build artifacts.
+# make run: Builds and runs the executable.
