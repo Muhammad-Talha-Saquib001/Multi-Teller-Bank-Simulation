@@ -1,8 +1,8 @@
 # Project Configuration
 PROJECT     := bank_simulation
 CC          := gcc
-CFLAGS      := -Wall -Wextra -I./include -std=c11
-LDFLAGS     := -lpthread
+CFLAGS      := -Wall -Wextra -I./include -std=c11 -g
+LDFLAGS     := -lpthread -lrt
 BUILD_DIR   := ./bin
 SRC_DIR     := ./src
 INCLUDE_DIR := ./include
@@ -11,9 +11,9 @@ INCLUDE_DIR := ./include
 TARGET_TELLER   := $(BUILD_DIR)/teller
 TARGET_CUSTOMER := $(BUILD_DIR)/customer
 
-# Sources
-SRC_TELLER   := $(SRC_DIR)/teller/main.c $(SRC_DIR)/ipc/named_pipe.c
-SRC_CUSTOMER := $(SRC_DIR)/customer/main.c $(SRC_DIR)/ipc/named_pipe.c
+# Sources (using wildcard for scalability)
+SRC_TELLER   := $(wildcard $(SRC_DIR)/teller/*.c) $(wildcard $(SRC_DIR)/ipc/*.c)
+SRC_CUSTOMER := $(wildcard $(SRC_DIR)/customer/*.c) $(wildcard $(SRC_DIR)/ipc/*.c)
 
 # Ensure build directory exists
 $(shell mkdir -p $(BUILD_DIR))

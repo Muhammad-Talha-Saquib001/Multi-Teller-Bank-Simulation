@@ -2,6 +2,8 @@
     "makefile.configureOnOpen": true,
     "files.associations": {
         "teller.h": "c",
-        "customer.h": "c"
+        "customer.h": "c",
+        "errno.h": "c",
+        "cstdlib": "c"
     }
 }

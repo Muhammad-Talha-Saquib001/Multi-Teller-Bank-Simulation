@@ -5,8 +5,10 @@
  * Manages teller threads, terminal allocation, and customer request processing.
  */
 
-#ifndef BANK_SIMULATION_TELLER_H
-#define BANK_SIMULATION_TELLER_H
+#ifndef TELLER_H
+#define TELLER_H
+
+#include <stdbool.h>
 
 #include "common.h"
 
