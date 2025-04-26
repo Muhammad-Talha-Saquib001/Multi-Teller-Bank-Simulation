@@ -1,3 +1,7 @@
 {
-    "makefile.configureOnOpen": true
+    "makefile.configureOnOpen": true,
+    "files.associations": {
+        "teller.h": "c",
+        "customer.h": "c"
+    }
 }

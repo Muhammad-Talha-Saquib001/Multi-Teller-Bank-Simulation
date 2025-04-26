@@ -1,14 +1,12 @@
 # Multi-Teller-Bank-Simulation
 A C-based multi-threaded bank counter simulation combining Producer-Consumer and Dining Philosophers problems. Uses pthreads, mutexes, and semaphores for synchronization, demonstrating OS concurrency and deadlock prevention.
 
-Build Everything:
-  make all
+Usage:
 
-Run the Server:
-  make run-server
+make or make all: Builds both executables
 
-Run a Customer (in a New Terminal):
-  make run-client  # Or manually: ./bin/bank_customer 1 2000
+make teller: Builds only the teller system
 
-Clean and Rebuild:
-  make clean && make
+make customer: Builds only the customer process
+
+make clean: Removes all build artifacts
