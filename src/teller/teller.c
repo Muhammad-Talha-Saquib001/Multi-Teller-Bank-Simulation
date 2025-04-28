@@ -63,12 +63,10 @@ void release_terminal(int teller_id) {
 // ======================
 
 static void* teller_worker(void* arg) {
-  // In teller_worker() function:
   CustomerRequest req;
   if (receive_request(CENTRAL_PIPE, &req, 1000)) {
-    printf("Received request from customer %d\n",
-           req.customer_id);  // Add this line
-                              // ... rest of handling ...
+    printf("Received request from customer %d\n", req.customer_id);
+    // ... rest of handling ...
   }
   int teller_id = *(int*)arg;
   system_state.teller_status[teller_id].is_active = true;
@@ -163,8 +161,7 @@ void teller_system_shutdown() {
 // ======================
 
 int get_teller_status(TellerStatus* status_array, int max_size) {
-  int count =
-      system_state.num_tellers;  // Use the stored count instead of sizeof
+  int count = system_state.num_tellers;
   if (count > max_size) count = max_size;
 
   for (int i = 0; i < count; i++) {

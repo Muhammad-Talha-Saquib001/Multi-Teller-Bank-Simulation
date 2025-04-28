@@ -5,8 +5,8 @@
  * Handles customer request generation and response processing.
  */
 
-#ifndef BANK_SIMULATION_CUSTOMER_H
-#define BANK_SIMULATION_CUSTOMER_H
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
 
 #include "common.h"
 
@@ -52,4 +52,4 @@ void customer_cleanup(int customer_id);
  */
 const char* customer_last_error();
 
-#endif  // BANK_SIMULATION_CUSTOMER_H
+#endif

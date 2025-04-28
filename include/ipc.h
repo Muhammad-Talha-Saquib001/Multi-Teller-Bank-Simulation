@@ -5,8 +5,8 @@
  * Provides pipe-based communication functions for teller-customer interaction.
  */
 
-#ifndef BANK_SIMULATION_IPC_H
-#define BANK_SIMULATION_IPC_H
+#ifndef IPC_H
+#define IPC_H
 
 #include "common.h"
 

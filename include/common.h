@@ -6,8 +6,8 @@
  * teller and customer components.
  */
 
-#ifndef BANK_SIMULATION_COMMON_H
-#define BANK_SIMULATION_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <stdbool.h>
 #include <stddef.h>
