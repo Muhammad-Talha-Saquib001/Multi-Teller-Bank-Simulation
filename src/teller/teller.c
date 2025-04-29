@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "../banking/banking_ops.c"
+#include "../include/banking_ops.h"
 #include "../include/common.h"
 #include "../include/ipc.h"
 
@@ -63,32 +65,42 @@ void release_terminal(int teller_id) {
 // ======================
 
 static void* teller_worker(void* arg) {
-  CustomerRequest req;
-  if (receive_request(CENTRAL_PIPE, &req, 1000)) {
-    printf("Received request from customer %d\n", req.customer_id);
-    // ... rest of handling ...
-  }
   int teller_id = *(int*)arg;
-  system_state.teller_status[teller_id].is_active = true;
 
   while (!system_state.shutdown_requested) {
     CustomerRequest req;
     if (receive_request(CENTRAL_PIPE, &req, 1000)) {
-      if (req.is_termination) break;
+      printf("Teller %d received request from customer %d\n", teller_id,
+             req.customer_id);
 
-      TerminalStatus status = acquire_terminal(teller_id);
-      if (status == TERMINAL_ACQUIRED) {
-        // Simulate transaction processing
-        sleep(1 + rand() % 2);
-        release_terminal(teller_id);
-
-        // Send response (simplified)
-        send_request(req.response_pipe, &req);
+      // Handle banking operations
+      switch (req.operation) {
+        case WITHDRAW:
+          handle_withdraw(req.customer_id, req.amount);
+          break;
+        case DEPOSIT:
+          handle_deposit(req.customer_id, req.amount);
+          break;
+        case BALANCE_CHECK:
+          handle_balance_check(req.customer_id);
+          break;
+        case CURRENCY_CONV:
+          handle_currency_conversion(req.customer_id, req.target);
+          break;
+        case BILL_PAYMENT:
+          handle_bill_payment(req.customer_id, req.target, req.amount);
+          break;
+        case LOAN_REQUEST:
+          handle_loan_request(req.customer_id, req.amount);
+          break;
+        default:
+          printf("Invalid operation requested\n");
       }
+
+      // Send response (simplified)
+      send_request(req.response_pipe, &req);
     }
   }
-
-  system_state.teller_status[teller_id].is_active = false;
   return NULL;
 }
 

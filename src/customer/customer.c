@@ -46,24 +46,21 @@ bool customer_init(int customer_id) {
   return true;
 }
 
-bool request_service(int customer_id) {
+bool request_service(CustomerRequest* req) {  // Changed from int customer_id
   if (!customer_state.initialized) return false;
-
-  CustomerRequest req = {.customer_id = customer_id, .is_termination = false};
-  snprintf(req.response_pipe, PIPENAME_MAX, "%s", customer_state.response_pipe);
-
-  return send_request(CENTRAL_PIPE, &req);
+  return send_request(CENTRAL_PIPE, req);
 }
 
 TerminalStatus wait_for_response(int customer_id, int timeout_ms) {
-  assert(customer_id == customer_state.customer_id);  // Verify match
+  assert(customer_id == customer_state.customer_id);
   if (!customer_state.initialized) return TERMINAL_ERROR;
 
   CustomerRequest response;
   if (!receive_request(customer_state.response_pipe, &response, timeout_ms)) {
-    return TERMINAL_BUSY;  // Timeout treated as "terminal busy"
+    return TERMINAL_BUSY;
   }
-  return TERMINAL_ACQUIRED;
+  return response
+      .operation_status;  // You'll need to add this field to CustomerRequest
 }
 
 void customer_cleanup(int customer_id) {
@@ -82,4 +79,62 @@ const char* customer_last_error() { return strerror(errno); }
 
 void make_response_pipe_name(int customer_id, char* buffer, size_t size) {
   snprintf(buffer, size, "/tmp/bank_customer_%d_pipe", customer_id);
+}
+
+// ======================
+// Interactive Menu
+// ======================
+
+void run_customer_interactive(int customer_id) {
+  if (!customer_init(customer_id)) {
+    fprintf(stderr, "Initialization failed: %s\n", customer_last_error());
+    return;
+  }
+
+  CustomerRequest req = {.customer_id = customer_id,
+                         .is_termination = false,
+                         .amount = 0.0,
+                         .target = ""};
+  make_response_pipe_name(customer_id, req.response_pipe, PIPENAME_MAX);
+
+  while (1) {
+    printf("\n=== Customer %d Menu ===\n", customer_id);
+    printf(
+        "1. Withdraw\n2. Deposit\n3. Balance\n4. Currency\n5. Bill Pay\n6. "
+        "Loan\n0. Exit\n");
+    printf("Select: ");
+
+    int choice;
+    scanf("%d", &choice);
+
+    if (choice == 0) break;
+
+    switch (choice) {
+      case 1:
+        req.operation = WITHDRAW;
+        printf("Amount: ");
+        scanf("%lf", &req.amount);
+        break;
+      case 2:
+        req.operation = DEPOSIT;
+        printf("Amount: ");
+        scanf("%lf", &req.amount);
+        break;
+      // ... Add other cases ...
+      default:
+        printf("Invalid choice\n");
+        continue;
+    }
+
+    if (!request_service(&req)) {
+      fprintf(stderr, "Service request failed\n");
+      break;
+    }
+
+    TerminalStatus status = wait_for_response(customer_id, 5000);
+    printf("Operation %s\n",
+           status == TERMINAL_ACQUIRED ? "succeeded" : "failed");
+  }
+
+  customer_cleanup(customer_id);
 }

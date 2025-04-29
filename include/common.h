@@ -30,15 +30,6 @@
 #define TERMINAL_PIPE "/tmp/bank_terminal_pipe"  ///< Terminal management
 
 /**
- * @brief Customer request structure
- */
-typedef struct {
-  int customer_id;                   ///< Unique customer identifier
-  char response_pipe[PIPENAME_MAX];  ///< Pipe for responses
-  bool is_termination;               ///< Special shutdown signal
-} CustomerRequest;
-
-/**
  * @brief Terminal acquisition result
  */
 typedef enum {
@@ -46,6 +37,26 @@ typedef enum {
   TERMINAL_BUSY,      ///< All terminals occupied
   TERMINAL_ERROR      ///< System error occurred
 } TerminalStatus;
+
+/**
+ * @brief Customer request structure
+ */
+typedef struct {
+  int customer_id;
+  enum {
+    WITHDRAW,
+    DEPOSIT,
+    BALANCE_CHECK,
+    CURRENCY_CONV,
+    BILL_PAYMENT,
+    LOAN_REQUEST
+  } operation;
+  double amount;
+  char target[32];
+  char response_pipe[PIPENAME_MAX];
+  bool is_termination;
+  TerminalStatus operation_status;  // Add this new field
+} CustomerRequest;
 
 // ======================
 // Utility Functions
