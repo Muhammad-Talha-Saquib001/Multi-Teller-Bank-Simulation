@@ -26,7 +26,8 @@ bool customer_init(int customer_id);
  * @param customer_id ID of the requesting customer
  * @return true if request was successfully sent
  */
-bool request_service(int customer_id);
+// bool request_service(int customer_id);
+bool request_service(CustomerRequest* req);
 
 /**
  * @brief Waits for response from teller system
@@ -51,5 +52,8 @@ void customer_cleanup(int customer_id);
  * @return Null-terminated error description
  */
 const char* customer_last_error();
+
+// Add this with other function declarations
+void run_customer_interactive(int customer_id);
 
 #endif
