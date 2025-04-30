@@ -18,6 +18,9 @@
 #include "../include/common.h"
 #include "../include/ipc.h"
 
+static pthread_mutex_t customer_mutexes[MAX_CUSTOMERS];  // Per-customer locking
+static Customer customers[MAX_CUSTOMERS];  // Shared array of customers
+
 // ======================
 // Shared Teller State
 // ======================
@@ -66,39 +69,50 @@ void release_terminal(int teller_id) {
 
 static void* teller_worker(void* arg) {
   int teller_id = *(int*)arg;
+  free(arg);  // Important: prevent memory leak
 
   while (!system_state.shutdown_requested) {
     CustomerRequest req;
     if (receive_request(CENTRAL_PIPE, &req, 1000)) {
+      if (req.is_termination) break;
+
       printf("Teller %d received request from customer %d\n", teller_id,
              req.customer_id);
 
-      // Handle banking operations
+      if (req.customer_id < 0 || req.customer_id >= MAX_CUSTOMERS) {
+        fprintf(stderr, "Invalid customer ID %d\n", req.customer_id);
+        continue;
+      }
+
+      Customer* cust = &customers[req.customer_id];
+      pthread_mutex_lock(&customer_mutexes[req.customer_id]);
+
       switch (req.operation) {
         case WITHDRAW:
-          handle_withdraw(req.customer_id, req.amount);
+          handle_withdraw(cust, req.amount);
           break;
         case DEPOSIT:
-          handle_deposit(req.customer_id, req.amount);
+          handle_deposit(cust, req.amount);
           break;
         case BALANCE_CHECK:
-          handle_balance_check(req.customer_id);
+          handle_balance_check(cust);
           break;
         case CURRENCY_CONV:
-          handle_currency_conversion(req.customer_id, req.target);
+          handle_currency_conversion(req, req.currency_code);
           break;
         case BILL_PAYMENT:
-          handle_bill_payment(req.customer_id, req.target, req.amount);
+          handle_bill_payment(cust, req.target, req.amount);
           break;
         case LOAN_REQUEST:
-          handle_loan_request(req.customer_id, req.amount);
+          handle_loan_request(cust, req.amount);
           break;
         default:
           printf("Invalid operation requested\n");
       }
 
-      // Send response (simplified)
-      send_request(req.response_pipe, &req);
+      pthread_mutex_unlock(&customer_mutexes[req.customer_id]);
+
+      send_request(req.response_pipe, &req);  // Response
     }
   }
   return NULL;
@@ -133,6 +147,14 @@ bool teller_system_init(int num_tellers, int num_terminals) {
     return false;
   }
 
+  // Initialize customer data
+  for (int i = 0; i < MAX_CUSTOMERS; ++i) {
+    customers[i].customer_id = i;
+    customers[i].balance = 0.0;
+    customers[i].active_loan = false;
+    pthread_mutex_init(&customer_mutexes[i], NULL);
+  }
+
   return true;
 }
 
@@ -164,6 +186,10 @@ void teller_system_shutdown() {
   // Cleanup
   cleanup_ipc_system();
   pthread_mutex_destroy(&system_state.terminal_mutex);
+  for (int i = 0; i < MAX_CUSTOMERS; ++i) {
+    pthread_mutex_destroy(&customer_mutexes[i]);
+  }
+
   free(system_state.teller_threads);
   free(system_state.teller_status);
 }

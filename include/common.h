@@ -11,6 +11,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 // ======================
 // Project Configuration
@@ -59,6 +60,12 @@ typedef struct {
   bool is_termination;
   TerminalStatus operation_status;
 } CustomerRequest;
+
+typedef struct {
+  int customer_id;
+  double balance;
+  bool active_loan;
+} Customer;
 
 // ======================
 // Utility Functions
