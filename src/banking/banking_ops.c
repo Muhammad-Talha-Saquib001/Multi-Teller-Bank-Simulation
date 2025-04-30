@@ -15,6 +15,7 @@ void strip_newline(char* str) {
 }
 
 void display_customer_menu(int customer_id) {
+  system("clear");
   printf("\n=== Customer %d Menu ===\n", customer_id);
   printf("1. Withdraw\n");
   printf("2. Deposit\n");
