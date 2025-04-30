@@ -4,9 +4,6 @@
 #include <string.h>
 #include <unistd.h>
 
-// // Shared simple "account balance" simulation
-// static double customer_balance = 1000.0;  // Starting balance
-
 void strip_newline(char* str) {
   size_t len = strlen(str);
   if (len > 0 && str[len - 1] == '\n') {
@@ -36,6 +33,7 @@ void handle_withdraw(Customer* customer, double amount) {
   } else {
     printf("Error: Insufficient funds\n");
   }
+  putchar('\n');
 }
 
 void handle_deposit(Customer* customer, double amount) {
@@ -43,11 +41,13 @@ void handle_deposit(Customer* customer, double amount) {
          customer->customer_id);
   customer->balance += amount;
   printf("Success! New balance: %.2f\n", customer->balance);
+  putchar('\n');
 }
 
 void handle_balance_check(Customer* customer) {
   printf("Teller: Balance check for customer %d\n", customer->customer_id);
   printf("Current balance: %.2f\n", customer->balance);
+  putchar('\n');
 }
 
 void handle_currency_conversion(CustomerRequest customer,
@@ -66,6 +66,7 @@ void handle_currency_conversion(CustomerRequest customer,
   } else {
     printf("Error: Unsupported currency\n");
   }
+  putchar('\n');
 }
 
 void handle_bill_payment(Customer* customer, const char* biller,
@@ -78,6 +79,7 @@ void handle_bill_payment(Customer* customer, const char* biller,
   } else {
     printf("Error: Insufficient funds\n");
   }
+  putchar('\n');
 }
 
 void handle_loan_request(Customer* customer, double amount) {
@@ -89,4 +91,5 @@ void handle_loan_request(Customer* customer, double amount) {
   } else {
     printf("Loan denied: Amount too large\n");
   }
+  putchar('\n');
 }
