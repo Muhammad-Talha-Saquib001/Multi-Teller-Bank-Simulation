@@ -11,6 +11,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 // ======================
 // Project Configuration
@@ -52,11 +53,19 @@ typedef struct {
     LOAN_REQUEST
   } operation;
   double amount;
-  char target[32];
+  char target[32];        // For generic use (e.g., bill type)
+  char currency_code[4];  // New: Stores EUR, USD, etc.
+  int loan_term;          // New: For LOAN_REQUEST
   char response_pipe[PIPENAME_MAX];
   bool is_termination;
-  TerminalStatus operation_status;  // Add this new field
+  TerminalStatus operation_status;
 } CustomerRequest;
+
+typedef struct {
+  int customer_id;
+  double balance;
+  bool active_loan;
+} Customer;
 
 // ======================
 // Utility Functions

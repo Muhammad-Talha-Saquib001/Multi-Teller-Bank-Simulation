@@ -8,9 +8,12 @@
 #ifndef TELLER_H
 #define TELLER_H
 
+#include <pthread.h>  // For pthread_mutex_t
 #include <stdbool.h>
 
-#include "common.h"
+#include "banking_ops.h"  // For Customer
+#include "common.h"       // For MAX_CUSTOMERS
+
 
 // ======================
 // Teller Configuration

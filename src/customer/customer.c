@@ -110,20 +110,50 @@ void run_customer_interactive(int customer_id) {
     if (choice == 0) break;
 
     switch (choice) {
-      case 1:
+      case 1:  // WITHDRAW
         req.operation = WITHDRAW;
-        printf("Amount: ");
+        printf("Amount to withdraw: ");
         scanf("%lf", &req.amount);
         break;
-      case 2:
+
+      case 2:  // DEPOSIT
         req.operation = DEPOSIT;
-        printf("Amount: ");
+        printf("Amount to deposit: ");
         scanf("%lf", &req.amount);
         break;
-      // ... Add other cases ...
+
+      case 3:  // BALANCE CHECK
+        req.operation = BALANCE_CHECK;
+        // No amount needed for balance inquiry
+        break;
+
+      case 4:  // CURRENCY_CONV
+        req.operation = CURRENCY_CONV;
+        printf("Amount: ");
+        scanf("%lf", &req.amount);
+        printf("Target currency (e.g., EUR): ");
+        scanf("%3s", req.currency_code);  // Use dedicated field
+        break;
+
+      case 5:  // BILL_PAYMENT
+        req.operation = BILL_PAYMENT;
+        printf("Bill amount: ");
+        scanf("%lf", &req.amount);
+        printf("Bill type (e.g., ELECTRICITY): ");
+        scanf("%31s", req.target);  // Reuse `target` for bill type
+        break;
+
+      case 6:  // LOAN_REQUEST
+        req.operation = LOAN_REQUEST;
+        printf("Loan amount: ");
+        scanf("%lf", &req.amount);
+        printf("Loan term (months): ");
+        scanf("%d", &req.loan_term);  // Use new field
+        break;
+
       default:
-        printf("Invalid choice\n");
-        continue;
+        printf("Invalid choice (must be 1-6)\n");
+        continue;  // Skip to next iteration
     }
 
     if (!request_service(&req)) {
