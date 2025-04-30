@@ -16,6 +16,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "../banking/banking_ops.c"
 #include "../include/common.h"
 #include "../include/ipc.h"
 
@@ -98,11 +99,9 @@ void run_customer_interactive(int customer_id) {
   make_response_pipe_name(customer_id, req.response_pipe, PIPENAME_MAX);
 
   while (1) {
-    printf("\n=== Customer %d Menu ===\n", customer_id);
-    printf(
-        "1. Withdraw\n2. Deposit\n3. Balance\n4. Currency\n5. Bill Pay\n6. "
-        "Loan\n0. Exit\n");
-    printf("Select: ");
+    // printf("\n=== Customer %d Menu ===\n", customer_id);
+    display_customer_menu(customer_id);
+    // printf("Select: ");
 
     int choice;
     scanf("%d", &choice);
@@ -161,7 +160,7 @@ void run_customer_interactive(int customer_id) {
       break;
     }
 
-    TerminalStatus status = wait_for_response(customer_id, 5000);
+    TerminalStatus status = wait_for_response(customer_id, 15000);
     printf("Operation %s\n",
            status == TERMINAL_ACQUIRED ? "succeeded" : "failed");
   }
